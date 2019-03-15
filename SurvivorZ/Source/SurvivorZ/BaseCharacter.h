@@ -11,14 +11,13 @@ class SURVIVORZ_API ABaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+private:
+	FVector forwardDirection;
+	FVector rightDirection;
 public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
-	UPROPERTY(EditAnywhere)
-	class USpringArmComponent* springArm;
-	class UCameraComponent* camera;
 	
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,7 +26,7 @@ public:
 	//Movement
 	void MoveForward(float axis);
 	void MoveRight(float axis);
-
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

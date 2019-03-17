@@ -16,18 +16,6 @@ void ABasePlayerController::BeginPlay()
 
 	SetViewTarget(mainCamera);
 	cameraDistance = (mainCamera->springArm)->TargetArmLength;
-	
-	Heap p = Heap();
-	p.Insert(Node(4));
-	p.Insert(Node(3));
-	p.Insert(Node(15));
-	p.Insert(Node(7));
-	p.Insert(Node(2));
-	for (int i = 0; i < 4; i++)
-	{
-		UE_LOG(LogTemp, Warning, TEXT(" %d "), p.GetMin().index);
-		p.DeleteMin();
-	}
 }
 
 void ABasePlayerController::Tick(float DeltaTime)

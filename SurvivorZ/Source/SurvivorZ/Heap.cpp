@@ -4,7 +4,7 @@
 
 Heap::Heap(int capacity)
 {
-
+	_vector.SetNum(capacity);
 }
 
 Heap::Heap(const TArray<Node>& vector) : _vector(vector)
@@ -22,31 +22,38 @@ Heap::~Heap()
 
 void Heap::BubbleDown(int index)
 {
-	int length = _vector.Num();
 	int leftChildIndex = 2 * index + 1;
 	int rightChildIndex = 2 * index + 2;
 
-	if (leftChildIndex >= length)
-		return;//leaf
+	int swapIndex;
 
-	int min = index;
+	if (leftChildIndex < items){
+		swapIndex = leftChildIndex;
 
-	if (_vector[index].index > _vector[leftChildIndex].index) {
-		min = leftChildIndex;
+		if (rightChildIndex < items) 
+		{
+			//does left child have a lower priority than right child?
+			if (_vector[leftChildIndex] < _vector[rightChildIndex]){
+				swapIndex = rightChildIndex;
+			}
+		}
+		if (_vector[index] < _vector[swapIndex]) {
+			Node tempnode = _vector[index];
+			int32 tempIndex = tempnode.heapIndex;
+			
+			_vector[index] = _vector[swapIndex];
+			_vector[swapIndex] = tempnode;
+
+			_vector[index].heapIndex = _vector[swapIndex].heapIndex;
+			_vector[swapIndex].heapIndex = tempIndex;
+			
+			BubbleDown(swapIndex);
+		}
+		else
+			return;
 	}
-
-	if ((rightChildIndex < length) && (_vector[min].index > _vector[rightChildIndex].index)) {
-		min = rightChildIndex;
-	}
-
-	if (min != index) {
-		//swap
-		Node temp = _vector[index];
-		_vector[index] = _vector[min];
-		_vector[min] = temp;
-		BubbleDown(min);
-	}
-
+	else
+		return;
 }
 
 void Heap::BubbleUp(int index)
@@ -56,16 +63,23 @@ void Heap::BubbleUp(int index)
 
 	int parentIndex = (index - 1) / 2;
 
-	if (_vector[parentIndex].index > _vector[index].index) {
-		Node temp = _vector[parentIndex];
+	if (_vector[parentIndex] > _vector[index]) {
+		Node tempnode = _vector[parentIndex];
+		int32 tempIndex = tempnode.heapIndex;
+
 		_vector[parentIndex] = _vector[index];
-		_vector[index] = temp;
+		_vector[index] = tempnode;
+		
+		_vector[parentIndex].heapIndex = _vector[index].heapIndex;
+		_vector[index].heapIndex = tempIndex;
+
 		BubbleUp(parentIndex);
 	}
 }
 
 void Heap::Heapfy()
 {
+	//we bubble every node, starting from the root
 	int length = _vector.Num();
 	for (int32 i = 0; i < length; i++)
 	{
@@ -73,10 +87,13 @@ void Heap::Heapfy()
 	}
 }
 
-void Heap::Insert(Node node)
+void Heap::Insert(Node& node)
 {
+	//insert a new node to the end and then bubble it up 
+	node.heapIndex = items;
 	_vector.Emplace(node);
 	BubbleUp(_vector.Num()-1);
+	items++;
 }
 
 Node Heap::GetMin()
@@ -86,14 +103,29 @@ Node Heap::GetMin()
 
 void Heap::DeleteMin()
 {
-	int length = _vector.Num();
-
-	if (length == 0)
+	//We remove the first, pick tha last one, put it at first and finnally bubble it down
+	if (items == 0)
 		return;
 
-	_vector[0] = _vector[length - 1];
-	_vector.Pop();
-
+	items--;
+	_vector[0] = _vector[items];
+	_vector[0].heapIndex = 0;
 	BubbleDown(0);
+}
 
+void Heap::UpdateItem(const Node & node)
+{
+	int32 index = 0;
+	auto ptr = Find(node);
+	if (ptr != nullptr) 
+	{
+		//we update the found node with aproppriate new values and the bubble it up
+		ptr->parent = node.parent;
+		ptr->gCost = node.gCost;
+		ptr->hCost = node.hCost;
+		ptr->world = node.world;
+		ptr->fCost = node.fCost;
+		
+		BubbleUp(ptr->heapIndex);
+	}
 }

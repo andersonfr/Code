@@ -12,7 +12,6 @@ ABaseCharacter::ABaseCharacter()
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	rightDirection = FVector(0, 1.0f, 0);
 	forwardDirection = FVector(1.0f, 0, 0);
-
 }
 
 // Called when the game starts or when spawned

@@ -15,6 +15,9 @@ void ActionFinding::Planning(WorldState & startState, const TArray<Action*> acti
 	int32 cnt = 0;
 
 	while(openSet.Count() > 0 && cnt < MAXITERATIONS) {
+		//counting iterations
+		cnt++; 
+		
 		Node current = openSet.GetMin();
 		openSet.DeleteMin();
 
@@ -23,14 +26,15 @@ void ActionFinding::Planning(WorldState & startState, const TArray<Action*> acti
 			outNode = current;
 			return;
 		}
+		//generating all world states based on actions effects
 		TArray<WorldState> worldStates;
-		GetAvailableNodes(current.world, actions, worldStates);
+		WorldStates(current.world, actions, worldStates);
 
 		for (auto& ws : worldStates) {
 			//Defining new Node
 			Node nNode = Node(ws);
 			int32 cost = nNode.gCost + ws.action->cost;
-			
+			//check if this node is already in closed set
 			if (MemberInClose(nNode, closedSet))
 				continue;
 
@@ -52,7 +56,7 @@ void ActionFinding::Planning(WorldState & startState, const TArray<Action*> acti
 
 }
 
-void ActionFinding::GetAvailableNodes(WorldState & current, const TArray<Action*> actions, TArray<WorldState>& outWorldState)
+void ActionFinding::WorldStates(WorldState & current, const TArray<Action*> actions, TArray<WorldState>& outWorldState)
 {
 	TArray<EGoal> conditionsToFullfil = current.GetGoalKeyList();
 	
